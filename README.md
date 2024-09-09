@@ -56,6 +56,9 @@ print(images)
 
 Will print all the urls of the images contained the google-drive `folderId` folder.
 
+The config files are publicily hosted over on [ridamoe/configs](https://github.com/ridamoe/configs). 
+Contributions are welcome!
+
 ## TODO
 
 - Document api
