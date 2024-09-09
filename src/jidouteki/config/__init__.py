@@ -19,10 +19,10 @@ class Metadata():
 @dataclass
 class Chapter():
     params: Dict[str, str]
-    volume: str
     chapter: str 
-    title: str
-    language: str
+    volume: str = field(default=None)
+    title: str = field(default=None)
+    language: str = field(default=None)
 
 import typing
 if typing.TYPE_CHECKING:
