@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "jidouteki"
+version = "0.2.1"
+authors = [
+  { name="LL3006", email="doublel3006@gmail.com" },
+]
+description = "Website-independed configurable manga sources/data extractor"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
+]
+dependencies = [
+  "beautifulsoup4~=4.12.3",
+  "lxml~=5.2.2",
+  "Requests~=2.32.3",
+  "selenium~=4.22.0",
+  "webdriver_manager~=4.0.1"
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+  "tests"
+]
