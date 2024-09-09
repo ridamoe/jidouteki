@@ -21,7 +21,8 @@ dependencies = [
   "lxml~=5.2.2",
   "Requests~=2.32.3",
   "selenium~=4.22.0",
-  "webdriver_manager~=4.0.1"
+  "webdriver_manager~=4.0.1",
+  "typeguard~=4.3.0"
 ]
 
 [tool.pytest.ini_options]
