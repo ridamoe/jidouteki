@@ -75,7 +75,7 @@ class Config():
     __MAPPINGS: dict
     __MAPPINGS_TYPES = {
         "meta": Metadata,
-        "match": List[str] | Tuple[str, ...],
+        "match": Dict[str, str] | None,
         "series.chapters": List[Chapter],
         "series.title": str,
         "series.cover": str,
@@ -128,7 +128,7 @@ class Config():
                 raise Exception(f"Missing @jidouteki.{key} from {self.__class__.__name__}")
             else: return None
         
-        params  =self.params(key)
+        params = self.params(key)
         kwargs  = {key: value for key,value in kwargs.items() if key in params} 
         value = func(self, **kwargs)
         type = self.__MAPPINGS_TYPES.get(key, None)
@@ -205,11 +205,7 @@ class Config():
         return self._get("meta")
 
     def match(self, url):
-        patterns = self._get("match")
-        for pattern in patterns:
-            if (m := re.match(pattern, url)):
-                return m.groupdict()
-        return None
+        return self._get("match", url=url)
         
     def images(self, **kwargs) -> List[str]:
         return self._get("images", **kwargs)
