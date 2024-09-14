@@ -57,10 +57,6 @@ class FetchedData():
         soup = BeautifulSoup(self.data, features="lxml")
         return soup.select(query)
     
-    def css(self, query):
-        soup = BeautifulSoup(self.data, features="lxml")
-        return soup.select(query)
-    
     def regex(self, query):
         return re.findall(query, self.data)
     
