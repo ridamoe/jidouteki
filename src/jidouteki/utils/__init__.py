@@ -4,11 +4,12 @@ from typing import List
 def get(dict, path: str):
     current = dict
     for prop in path.split("."):
-        if prop.isdigit():
-            prop = int(prop)
         try:
-            current = current[prop]
-        except:
+            if (isinstance(current, list)):
+                current = current[int(prop)]
+            else:
+                current = current[prop]
+        except (KeyError, IndexError):
             raise KeyError(f"Cannot get property {path} from {dict} object")
     return current
 
