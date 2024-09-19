@@ -11,7 +11,6 @@ class Jidouteki():
     def __init__(self, proxy, cache_ttl=180) -> None:
         self.proxy = proxy
         self.cache_ttl = cache_ttl
-        self.cache = {}
     
     def load_config(self, path) -> "Config":
             path = Path(path)

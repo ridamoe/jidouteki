@@ -4,10 +4,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from urllib.parse import urljoin
 import itertools
-import requests
+from requests_cache import CachedSession
 import json
 from functools import reduce
 import urllib.parse
+from typeguard import check_type
+import inspect
 
 @dataclass
 class Metadata():
@@ -35,10 +37,9 @@ class FetchType(Enum):
 from bs4 import BeautifulSoup
 
 class FetchedData():
-    def __init__(self, data, type) -> None:
+    def __init__(self, data) -> None:
         self._index = 0
         self._data = data if isinstance(data, (list,tuple)) else [data]
-        self.type = type
     
     def __iter__(self):
         for i in range(0, len(self._data)):
@@ -48,7 +49,9 @@ class FetchedData():
     
     @property
     def data(self):
-        return self._data[self._index]
+        if self._index < len(self._data): 
+            return self._data[self._index]
+        else: return None
     
     def json(self):
         return json.loads(self.data)
@@ -63,9 +66,6 @@ class FetchedData():
     def xpath(self, query):
         raise NotImplementedError()
 
-from typeguard import check_type
-import inspect
-import time
 
 class Config():
     __MAPPINGS: dict
@@ -79,9 +79,14 @@ class Config():
     }
     __MAPPINGS_REQUIRED = ["meta", "images"]
     
+    def init(self):
+        pass
+    
     def __init__(self, _context: "Jidouteki") -> None:
         self._context = _context
-    
+        self.session = CachedSession(expire_after=self._context.cache_ttl, backend="memory")
+        self.init()
+        
     def __init_subclass__(cls, **kwargs):
         cls.__MAPPINGS = {}
         for obj in vars(cls).values():
@@ -142,31 +147,18 @@ class Config():
 
         return value
     
-    def fetch(self, *args, type=FetchType.REQUEST) -> FetchedData:
+    def fetch(self, *args, method="GET", **kwargs) -> FetchedData:
         if self.meta.base: args = (self.meta.base, *args) 
-        def _fetch(args, type):
-            if type == FetchType.REQUEST:
-                args = [arg if isinstance(arg, (list,tuple)) else [arg] for arg in args]
-                urls = [reduce(lambda a, b: urljoin(a, b), p) for p in itertools.product(*args)]
-                
-                contents = []
-                for url in urls:
-                    resp = requests.get(url)
-                    if not resp.ok: continue
-                    contents.append(resp.content)
-                return FetchedData(contents, type)
+        args = [arg if isinstance(arg, (list,tuple)) else [arg] for arg in args]
+        urls = [reduce(lambda a, b: urljoin(a, b), p) for p in itertools.product(*args)]
         
-        cache = self._context.cache
-        cache_key = hash(str((*args, type)))
+        contents = []
+        for url in urls:
+            resp = self.session.request(method, url, **kwargs)
+            if not resp.ok: continue
+            contents.append(resp.content)
+        return FetchedData(contents)
 
-        if cache_key in cache.keys():
-            cache_hit = cache[cache_key]
-            if time.time() - cache_hit[1] <= cache_hit[2]:
-                 return cache_hit[0]
-        
-        value = _fetch(args, type)
-        cache[cache_key] = (value, time.time(), self._context.cache_ttl)
-        return cache[cache_key][0]
         
     def proxy(self, url, headers: Dict[str, str]={}):
         params = []
