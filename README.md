@@ -6,13 +6,13 @@ It uses python configs to describe website structures and provides many convenie
 
 ## Example
 
-Given a `google-drive.py` config
+Given a `google-drive.py` file 
 
 ```python
 import jidouteki
 
 @jidouteki.register
-class GDrive(Config):
+class GDrive(ProviderConfig):
     @jidouteki.meta
     def _meta(self):
         return jidouteki.Metadata(
@@ -22,14 +22,14 @@ class GDrive(Config):
         )
 
     @jidouteki.match
-    def _match(self):
+    def match(self):
         return (
             r"https://drive\.google\.com/drive/folders/(?P<folderId>.*?)(?:[/?].*|)$",
         )
   
     @jidouteki.images
-    def _images(self, folderId):
-        d = self.fetch(f"/drive/folders/{folderId}")
+    def images(self, folderId):
+        d = self.utils.fetch(f"/drive/folders/{folderId}")
         d = d.css("c-wiz > div[data-id]")
         
         images = []
@@ -48,7 +48,7 @@ jdtk = Jidouteki(
     proxy="https://your-cors-proxy/"
 )
 
-gdrive = jdtk.load_config("google-drive.py")
+gdrive = jdtk.load_provider("google-drive.py")
 
 images = gdrive.images(<folderId>) 
 print(images)
@@ -56,7 +56,7 @@ print(images)
 
 Will print all the urls of the images contained the google-drive `folderId` folder.
 
-The config files are publicily hosted over on [ridamoe/configs](https://github.com/ridamoe/configs). 
+The config files are publicily hosted over on [ridamoe/configs](https://github.com/ridamoe/configs).
 Contributions are welcome!
 
 ## TODO
