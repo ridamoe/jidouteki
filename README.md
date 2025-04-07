@@ -11,7 +11,6 @@ Given a `google-drive.py` file
 ```python
 import jidouteki
 
-@jidouteki.register
 class GDrive(ProviderConfig):
     @jidouteki.meta
     def _meta(self):

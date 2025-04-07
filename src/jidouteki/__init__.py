@@ -1,10 +1,9 @@
 from pathlib import Path
-from .utils import consts
 import importlib.util
 import importlib
+import inspect
 from typing import List
 from .provider import *
-from . import utils
 
 class Jidouteki():
     def __init__(self, proxy, cache_ttl=180) -> None:
@@ -18,11 +17,19 @@ class Jidouteki():
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             
-            attr = getattr(module, consts.CONFIG_FIELD, None)
+            provider_config = None
             
-            if attr: return Provider(attr(context=self))
-            else:
-                raise Exception(f"Config not found in '{path.name}'. Did you forget to add '@jidouteki.register'?")
+            for _, klass in inspect.getmembers(module, inspect.isclass):
+                if issubclass(klass, ProviderConfig) and klass is not ProviderConfig:
+                    if provider_config != None:
+                        raise Exception(f"Multiple provider configs found in '{path.name}'. Only a single provider can be defined per file.")
+                    else:
+                        provider_config = klass
+            
+            if not provider_config:
+                raise Exception(f"No provider config found in '{path.name}'. Create a class that inherits from 'ProviderConfig'")
+                 
+            return Provider(provider_config(context=self))
 
     def load_directory(self, dir) -> List[Provider]:
         configs = []

@@ -44,8 +44,8 @@ class ProviderConfigUtils():
     
 class ProviderConfig():
     """
-    The configuration for a single scraper. Each website should implement 
-    this class and register it with `@jidouteki.register` to get it loaded by jidouteki.
+    The configuration for a single scraper. Each website should extend 
+    this class and it will automatically get loaded by jidouteki.
     """
     
     __MAPPINGS: dict

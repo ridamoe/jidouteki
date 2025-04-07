@@ -1,15 +1,3 @@
-import inspect
-from .. import consts
-
-def register(obj):
-    """Marks an object as target."""
-    
-    frame = inspect.currentframe().f_back
-    global_vars = frame.f_globals
-    global_vars[consts.CONFIG_FIELD] = obj
-    
-    return obj
-
 def mapping_factory(prop):
     """Add a mapping to a config class"""
     def decorator(func):
@@ -30,4 +18,4 @@ series = Series()
 
 images = mapping_factory("images")
 
-__all__ = ["register", "meta", "match", "series", "images"]
+__all__ = ["meta", "match", "series", "images"]
