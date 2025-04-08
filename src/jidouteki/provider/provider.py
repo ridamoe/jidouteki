@@ -1,5 +1,5 @@
-from .objects import *
-from .config import ProviderConfig
+from ..objects import *
+from ..config import ProviderConfig
 from typeguard import check_type
 from typing import List
 import inspect

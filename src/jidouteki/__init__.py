@@ -4,6 +4,7 @@ import importlib
 import inspect
 from typing import List
 from .provider import *
+from .config import *
 
 class Jidouteki():
     def __init__(self, proxy, cache_ttl=180) -> None:

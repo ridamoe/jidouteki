@@ -5,7 +5,7 @@ import itertools
 from functools import reduce
 import urllib.parse
 from abc import ABC, abstractmethod
-from .objects import Metadata
+from ..objects import Metadata
 from .fetch import FetchedData
 import typing
 if typing.TYPE_CHECKING:
@@ -17,7 +17,7 @@ class ProviderConfigUtils():
     
     @property
     def provider(self): 
-        from .provider import Provider
+        from ..provider.provider import Provider
         return Provider(self.config)
     
     def fetch(self, *args, method="GET", **kwargs) -> FetchedData:
