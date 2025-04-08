@@ -87,7 +87,7 @@ class Provider():
     
     @property
     def meta(self) -> Metadata:
-        return self._get("meta")
+        return self.config.meta
 
     def match(self, url):
         return self._get("match", url=url)

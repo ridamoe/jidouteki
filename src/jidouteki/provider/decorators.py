@@ -7,7 +7,6 @@ def mapping_factory(prop):
         return func
     return decorator
 
-meta = mapping_factory("meta")
 match = mapping_factory("match")
 
 class Series():
@@ -18,4 +17,4 @@ series = Series()
 
 images = mapping_factory("images")
 
-__all__ = ["meta", "match", "series", "images"]
+__all__ = ["match", "series", "images"]

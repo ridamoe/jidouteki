@@ -4,6 +4,8 @@ from urllib.parse import urljoin
 import itertools
 from functools import reduce
 import urllib.parse
+from abc import ABC, abstractmethod
+from .objects import Metadata
 from .fetch import FetchedData
 import typing
 if typing.TYPE_CHECKING:
@@ -41,13 +43,18 @@ class ProviderConfigUtils():
         query_string = urllib.parse.urlencode(params)
             
         return f"{self.config.context.proxy}?{query_string}"
-    
-class ProviderConfig():
+
+class ProviderConfig(ABC):
     """
     The configuration for a single scraper. Each website should extend 
     this class and it will automatically get loaded by jidouteki.
     """
     
+    @property
+    @abstractmethod
+    def meta(self) -> Metadata:
+        pass
+        
     __MAPPINGS: dict
 
     def __init__(self, context: "Jidouteki") -> None:

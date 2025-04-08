@@ -12,8 +12,7 @@ Given a `google-drive.py` file
 import jidouteki
 
 class GDrive(ProviderConfig):
-    @jidouteki.meta
-    def _meta(self):
+    def meta(self):
         return jidouteki.Metadata(
             base = 'https://drive.google.com/',
             key = 'google-drive',
