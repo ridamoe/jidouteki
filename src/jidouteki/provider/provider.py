@@ -2,6 +2,7 @@ from ..objects import *
 from ..config import ProviderConfig
 from typeguard import check_type
 from typing import List
+from .get import ProviderGet
 import inspect
 
 MAPPINGS_TYPES = {
@@ -16,6 +17,7 @@ MAPPINGS_TYPES = {
 class Provider():
     def __init__(self, config: ProviderConfig) -> None:
         self.config = config
+        self.get = ProviderGet(config)
 
     def has(self, key):
         """
@@ -34,55 +36,6 @@ class Provider():
         """
         return self.config._get_mapping_params(key)
     
-    def _get(self, key, **kwargs):
-        value = self.config._exec_mapping(key, **kwargs)
-
-        type = MAPPINGS_TYPES.get(key, None)
-        if type:
-            try:
-                check_type(value, type)
-            except Exception as e:
-                file_path = inspect.getfile(func)
-                source_lines, line_number = inspect.getsourcelines(func)
-                function_name = func.__name__
-                
-                # Format the output
-                e.add_note(f"  File \"{file_path}\", line {line_number}, in {function_name}\nType check failed for @jidouteki.{key}. Check your return type")
-                raise e
-
-        return value
-    
-    class Series:
-        def __init__(self, provider: "Provider"):
-            self.provider = provider
-
-        def title(self, **kwargs) -> str:
-            return self.provider._get("series.title", **kwargs)
-
-        def chapters(self, **kwargs) -> List[Chapter]:
-            return self.provider._get("series.chapters", **kwargs)
-
-        def cover(self, **kwargs) -> str:
-            return self.provider._get("series.cover", **kwargs)
-
-    @property
-    def series(self):
-        return Provider.Series(self)
-    
     @property
     def meta(self) -> Metadata:
         return self.config.meta
-
-    def match(self, url):
-        return self._get("match", url=url)
-        
-    def images(self, **kwargs) -> List[str]:
-        return self._get("images", **kwargs)
-
-    class Search:
-        def __init__(self, provider: "Provider"):
-            self.provider = provider
-
-    @property
-    def search(self):
-        return Provider.Search(self)

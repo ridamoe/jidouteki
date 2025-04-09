@@ -57,15 +57,14 @@ class ProviderConfig(ABC):
         ]
         return args[1:]
     
-    def _exec_mapping(self, key, **kwargs):
+    def _exec_mapping(self, key, *args, **kwargs):
         mapping = self._get_mapping(key, required=True)
         
-        # Filter keyword arguments based on function signature parameters
-        params = self._get_mapping_params(key)
-        kwargs  = {key: value for key,value in kwargs.items() if key in params}
-        print(kwargs)
-        
-        return mapping(self, **kwargs)
+        # Match arguments to function signature parameters
+        signature = inspect.signature(mapping)
+        bound = signature.bind_partial(*args, **kwargs)
+        bound.apply_defaults()
+        return mapping(self,*bound.args, **bound.kwargs)
         
     @property
     def provider(self): 
