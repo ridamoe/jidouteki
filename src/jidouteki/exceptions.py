@@ -1,2 +1,5 @@
-class MissingRequiredMappingError(Exception):
+class MissingMappingError(Exception):
+    pass
+
+class MissingRequiredMappingError(MissingMappingError):
     pass

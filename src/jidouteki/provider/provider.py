@@ -32,21 +32,11 @@ class Provider():
             Example: `provider.params("series.chapter")` returns the list
             of keyword parameters for `provider.series.chapter()`
         """
-        func = self.config._get_mapping(key)
-        if func:
-            signature = inspect.signature(func)
-            args = [
-                param.name for param in signature.parameters.values()
-            ]
-            return args[1:]
-        else: return []
-
+        return self.config._get_mapping_params(key)
+    
     def _get(self, key, **kwargs):
-        func = self.config._get_mapping(key)
-        
-        params = self.params(key)
-        kwargs  = {key: value for key,value in kwargs.items() if key in params} 
-        value = func(self.config, **kwargs)
+        value = self.config._exec_mapping(key, **kwargs)
+
         type = MAPPINGS_TYPES.get(key, None)
         if type:
             try:

@@ -7,8 +7,9 @@ import urllib.parse
 from abc import ABC, abstractmethod
 from ..objects import Metadata
 from .fetch import FetchedData
-from ..exceptions import MissingRequiredMappingError
+from ..exceptions import *
 import typing
+import inspect
 if typing.TYPE_CHECKING:
     from .. import Jidouteki
 
@@ -41,9 +42,31 @@ class ProviderConfig(ABC):
             if key not in cls.__MAPPINGS:
                 raise MissingRequiredMappingError(f"Missing @jidouteki.{key} from {self.__class__.__name__}")
     
-    def _get_mapping(self, key):
-        return self.__MAPPINGS.get(key)
+    def _get_mapping(self, key, required=False):
+        value = self.__MAPPINGS.get(key)
+        if value is None and required:
+            raise MissingMappingError(f"Missing mapping '{key}' from {self.__class__.__name__}")
+        return value
     
+    def _get_mapping_params(self, key):
+        """Returns the parameters of the mapping"""
+        func = self._get_mapping(key, required=True)
+        signature = inspect.signature(func)
+        args = [
+            param.name for param in signature.parameters.values()
+        ]
+        return args[1:]
+    
+    def _exec_mapping(self, key, **kwargs):
+        mapping = self._get_mapping(key, required=True)
+        
+        # Filter keyword arguments based on function signature parameters
+        params = self._get_mapping_params(key)
+        kwargs  = {key: value for key,value in kwargs.items() if key in params}
+        print(kwargs)
+        
+        return mapping(self, **kwargs)
+        
     @property
     def provider(self): 
         from ..provider.provider import Provider
