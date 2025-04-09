@@ -1,0 +1,2 @@
+class MissingRequiredMappingError(Exception):
+    pass

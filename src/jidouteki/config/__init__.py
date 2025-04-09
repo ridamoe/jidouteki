@@ -7,9 +7,12 @@ import urllib.parse
 from abc import ABC, abstractmethod
 from ..objects import Metadata
 from .fetch import FetchedData
+from ..exceptions import MissingRequiredMappingError
 import typing
 if typing.TYPE_CHECKING:
     from .. import Jidouteki
+
+MAPPINGS_REQUIRED = ["images"]
     
 class ProviderConfig(ABC):
     """
@@ -34,6 +37,9 @@ class ProviderConfig(ABC):
             mapping =  getattr(obj, "__mapping", None)
             if mapping:
                 cls.__MAPPINGS[mapping] = obj
+        for key in MAPPINGS_REQUIRED:
+            if key not in cls.__MAPPINGS:
+                raise MissingRequiredMappingError(f"Missing @jidouteki.{key} from {self.__class__.__name__}")
     
     def _get_mapping(self, key):
         return self.__MAPPINGS.get(key)

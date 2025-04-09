@@ -13,8 +13,6 @@ MAPPINGS_TYPES = {
     "images": List[str],
 }
 
-MAPPINGS_REQUIRED = ["meta", "images"]
-
 class Provider():
     def __init__(self, config: ProviderConfig) -> None:
         self.config = config
@@ -45,10 +43,6 @@ class Provider():
 
     def _get(self, key, **kwargs):
         func = self.config._get_mapping(key)
-        if not func: 
-            if  key in MAPPINGS_REQUIRED:
-                raise Exception(f"Missing @jidouteki.{key} from {self.__class__.__name__}")
-            else: return None
         
         params = self.params(key)
         kwargs  = {key: value for key,value in kwargs.items() if key in params} 
