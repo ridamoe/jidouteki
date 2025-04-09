@@ -35,7 +35,7 @@ class ProviderConfig(ABC):
             if mapping:
                 cls.__MAPPINGS[mapping] = obj
     
-    def _get(self, key):
+    def _get_mapping(self, key):
         return self.__MAPPINGS.get(key)
     
     @property

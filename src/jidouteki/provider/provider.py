@@ -26,7 +26,7 @@ class Provider():
             Example: `provider.has("series.chapter")` will return True / False
             based on whether the provider supports chapter lists
         """
-        return self.config._get(key) != None
+        return self.config._get_mapping(key) != None
 
     def params(self, key):
         """Returns the parameters of the provider method
@@ -34,7 +34,7 @@ class Provider():
             Example: `provider.params("series.chapter")` returns the list
             of keyword parameters for `provider.series.chapter()`
         """
-        func = self.config._get(key)
+        func = self.config._get_mapping(key)
         if func:
             signature = inspect.signature(func)
             args = [
@@ -44,7 +44,7 @@ class Provider():
         else: return []
 
     def _get(self, key, **kwargs):
-        func = self.config._get(key)
+        func = self.config._get_mapping(key)
         if not func: 
             if  key in MAPPINGS_REQUIRED:
                 raise Exception(f"Missing @jidouteki.{key} from {self.__class__.__name__}")
