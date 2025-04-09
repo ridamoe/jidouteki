@@ -1,20 +1,23 @@
-def mapping_factory(prop):
-    """Add a mapping to a config class"""
+from .exceptions import *
+
+def make_map_decorator(key):
     def decorator(func):
         if hasattr(func, "__mapping"):
-            raise Exception(f"Duplicate funcion mapping. Remove one of @jidouteki.{prop}")
-        func.__mapping = prop
+            raise DuplicatedMappingDecorator("Functions can have at most one mapping decorator")
+        func.__mapping = key
         return func
     return decorator
 
-match = mapping_factory("match")
-
-class Series():
-    title = staticmethod(mapping_factory("series.title"))
-    chapters = staticmethod(mapping_factory("series.chapters"))
-    cover = staticmethod(mapping_factory("series.cover"))
-series = Series()
-
-images = mapping_factory("images")
-
-__all__ = ["match", "series", "images"]
+class MapDecorators:
+    def __init__(self):
+        self.series = MapDecorators.SeriesDecorators()
+        self.images = make_map_decorator("images")
+        self.match = make_map_decorator("match")
+    
+    class SeriesDecorators:
+        def __init__(self):
+            self.title = make_map_decorator("series.title")
+            self.chapters = make_map_decorator("series.chapters")
+            self.cover = make_map_decorator("series.cover")
+        
+map = MapDecorators()
