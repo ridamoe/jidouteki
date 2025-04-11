@@ -1,3 +1,9 @@
+class ProviderError(Exception):
+    pass
+
+class MappingWrongArgumentsError(ProviderError):
+    pass
+
 class ProviderConfigError(Exception):
     pass
 

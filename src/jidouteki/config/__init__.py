@@ -59,12 +59,25 @@ class ProviderConfig(ABC):
     
     def _exec_mapping(self, key, *args, **kwargs):
         mapping = self._get_mapping(key, required=True)
+        signature = inspect.signature(mapping)
+        
+        # Filter arguments, ignoring eventual extra parameters
+        max_args = sum(1 for p in signature.parameters.values()
+                if p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD))
+        
+        filtered_args = [self, *args][:max_args]
+        filtered_kwargs = {
+            k: v for k, v in kwargs.items()
+            if k in signature.parameters.keys()
+        }
         
         # Match arguments to function signature parameters
-        signature = inspect.signature(mapping)
-        bound = signature.bind_partial(*args, **kwargs)
+        try:
+            bound = signature.bind(*filtered_args, **filtered_kwargs)
+        except TypeError as e:
+            raise MappingWrongArgumentsError(f"Wrong arguments '{mapping.__qualname__}' {str(e)}")
         bound.apply_defaults()
-        return mapping(self,*bound.args, **bound.kwargs)
+        return mapping(*bound.args, **bound.kwargs)
         
     @property
     def provider(self): 
