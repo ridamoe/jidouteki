@@ -3,7 +3,7 @@ from .exceptions import *
 def make_map_decorator(key):
     def decorator(func):
         if hasattr(func, "__mapping"):
-            raise DuplicatedMappingDecorator("Functions can have at most one mapping decorator")
+            raise DuplicatedMappingDecoratorError("Functions can have at most one mapping decorator")
         func.__mapping = key
         return func
     return decorator
