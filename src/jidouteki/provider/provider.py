@@ -3,6 +3,8 @@ from ..config import ProviderConfig
 from typeguard import check_type
 from typing import List
 from .get import ProviderGet
+from .has import ProviderHas
+from .params import ProviderParams
 import inspect
 
 MAPPINGS_TYPES = {
@@ -18,23 +20,16 @@ class Provider():
     def __init__(self, config: ProviderConfig) -> None:
         self.config = config
         self.get = ProviderGet(config)
-
-    def has(self, key):
+        
+        self.has = ProviderHas(config)
         """
         Checks if a provider method is availablbe
-            
-            Example: `provider.has("series.chapter")` will return True / False
-            based on whether the provider supports chapter lists
         """
-        return self.config._get_mapping(key) != None
-
-    def params(self, key):
-        """Returns the parameters of the provider method
-            
-            Example: `provider.params("series.chapter")` returns the list
-            of keyword parameters for `provider.series.chapter()`
+        
+        self.params = ProviderParams(config)
         """
-        return self.config._get_mapping_params(key)
+        Returns the parameters of the provider method
+        """
     
     @property
     def meta(self) -> Metadata:
