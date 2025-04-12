@@ -1,5 +1,5 @@
 from requests_cache import CachedSession
-from typing import Dict
+from typing import Dict, List, Callable
 from urllib.parse import urljoin
 import itertools
 from functools import reduce
@@ -7,6 +7,7 @@ import urllib.parse
 from abc import ABC, abstractmethod
 from ..objects import Metadata
 from .fetch import FetchedData
+from ..tests import Test
 from ..exceptions import *
 import typing
 import inspect
@@ -26,7 +27,8 @@ class ProviderConfig(ABC):
     def meta(self) -> Metadata:
         pass
         
-    __MAPPINGS: dict
+    __MAPPINGS: Dict[str, Callable]
+    __TESTS: Dict[str, List[Test]]
 
     def __init__(self, context: "Jidouteki") -> None:
         self.context = context
@@ -34,18 +36,32 @@ class ProviderConfig(ABC):
         
     def __init_subclass__(cls, **kwargs):
         cls.__MAPPINGS = {}
+        cls.__TESTS = {}
         for obj in vars(cls).values():
             mapping =  getattr(obj, "__mapping", None)
+            tests =  getattr(obj, "__tests", None)
             if mapping:
                 cls.__MAPPINGS[mapping] = obj
+                cls.__TESTS[mapping] = tests
         for key in MAPPINGS_REQUIRED:
             if key not in cls.__MAPPINGS:
                 raise MissingRequiredMappingError(f"Missing @jidouteki.{key} from {self.__class__.__name__}")
+    
+    def _get_keys(self):
+        return list(self.__MAPPINGS.keys())
     
     def _get_mapping(self, key, required=False):
         value = self.__MAPPINGS.get(key)
         if value is None and required:
             raise MissingMappingError(f"Missing mapping '{key}' from {self.__class__.__name__}")
+        return value
+    
+    def _get_tests(self, key, required=False):
+        value = self.__TESTS.get(key)
+        if value is None:
+            if required:
+                raise MissingTestError(f"Missing test for mapping '{key}' from {self.__class__.__name__}")
+            else: value = []
         return value
     
     def _get_mapping_params(self, key):

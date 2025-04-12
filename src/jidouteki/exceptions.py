@@ -7,6 +7,9 @@ class MappingWrongArgumentsError(ProviderError):
 class ProviderConfigError(Exception):
     pass
 
+class MissingTestError(ProviderConfigError):
+    pass
+
 class TestWithoutMappingError(ProviderConfigError):
     pass
 

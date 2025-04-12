@@ -1,4 +1,5 @@
 from .exceptions import *
+from typing import Tuple, Dict, Any
 
 def make_map_decorator(key):
     def decorator(func):
@@ -21,3 +22,16 @@ class MapDecorators:
             self.cover = make_map_decorator("series.cover")
         
 map = MapDecorators()
+
+from .tests import TestKind, Test
+
+def test(input: Tuple[Any] | Dict | Any, expected_output: Dict=None, kind: TestKind = None):
+    def method(func):
+        if hasattr(func, "__mapping"):
+            if not hasattr(func, "__tests"):
+                func.__tests = []
+            func.__tests.append(Test(input, expected_output, kind))
+        else:
+            TestWithoutMappingError("Cannot decorate a test without a mapping. Try calling one of `@jidouteki.map.*` first")
+        return func
+    return method

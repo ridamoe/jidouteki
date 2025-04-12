@@ -4,6 +4,7 @@ from typeguard import check_type
 from typing import List
 from .get import ProviderGet
 from .has import ProviderHas
+from .test import ProviderTest
 from .params import ProviderParams
 import inspect
 
@@ -29,6 +30,11 @@ class Provider():
         self.params = ProviderParams(config)
         """
         Returns the parameters of the provider method
+        """
+        
+        self.test = ProviderTest(config)
+        """
+        Run self tests defined by providers
         """
     
     @property
