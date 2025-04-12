@@ -1,4 +1,4 @@
-from ..config import ProviderConfig
+from ..parser import WebsiteParser
 from ..objects import *
 from .dispatcher import *
 
@@ -19,13 +19,13 @@ class HasSearch(Dispatcher):
     pass
     
 class ProviderHas(Dispatcher):
-    def __init__(self, config: ProviderConfig) -> None:
-        self._config = config
+    def __init__(self, parser: WebsiteParser) -> None:
+        self._parser = parser
         self.series = HasSeries(self.__dispatcher__)
         self.search = HasSearch(self.__dispatcher__)
     
     def __dispatcher__(self, key, *args, **kwargs):
-        value = self._config._get_mapping(key)
+        value = self._parser._get_mapping(key)
         return value is not None
     
     @property

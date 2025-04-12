@@ -1,5 +1,5 @@
 from ..objects import *
-from ..config import ProviderConfig
+from ..parser import WebsiteParser
 from typeguard import check_type
 from typing import List
 from .get import ProviderGet
@@ -18,25 +18,25 @@ MAPPINGS_TYPES = {
 }
 
 class Provider():
-    def __init__(self, config: ProviderConfig) -> None:
-        self.config = config
-        self.get = ProviderGet(config)
+    def __init__(self, parser: WebsiteParser) -> None:
+        self.parser = parser
+        self.get = ProviderGet(parser)
         
-        self.has = ProviderHas(config)
+        self.has = ProviderHas(parser)
         """
         Checks if a provider method is availablbe
         """
         
-        self.params = ProviderParams(config)
+        self.params = ProviderParams(parser)
         """
         Returns the parameters of the provider method
         """
         
-        self.test = ProviderTest(config)
+        self.test = ProviderTest(parser)
         """
         Run self tests defined by providers
         """
     
     @property
     def meta(self) -> Metadata:
-        return self.config.meta
+        return self.parser.meta

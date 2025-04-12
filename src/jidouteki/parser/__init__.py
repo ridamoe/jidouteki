@@ -16,10 +16,10 @@ if typing.TYPE_CHECKING:
 
 MAPPINGS_REQUIRED = ["images"]
     
-class ProviderConfig(ABC):
+class WebsiteParser(ABC):
     """
-    The configuration for a single scraper. Each website should extend 
-    this class and it will automatically get loaded by jidouteki.
+    The configuration for a single website parser. Each website should 
+    extend this class and it will automatically get loaded by jidouteki.
     """
     
     @property

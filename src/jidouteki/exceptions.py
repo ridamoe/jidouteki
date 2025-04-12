@@ -4,16 +4,16 @@ class ProviderError(Exception):
 class MappingWrongArgumentsError(ProviderError):
     pass
 
-class ProviderConfigError(Exception):
+class ParserError(Exception):
     pass
 
-class MissingTestError(ProviderConfigError):
+class MissingTestError(ParserError):
     pass
 
-class TestWithoutMappingError(ProviderConfigError):
+class TestWithoutMappingError(ParserError):
     pass
 
-class DuplicatedMappingDecoratorError(ProviderConfigError):
+class DuplicatedMappingDecoratorError(ParserError):
     pass
 
 

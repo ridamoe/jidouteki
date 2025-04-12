@@ -1,4 +1,4 @@
-from ..config import ProviderConfig
+from ..parser import WebsiteParser
 from ..objects import *
 from .dispatcher import *
 from ..tests import TestsOutcome
@@ -17,23 +17,23 @@ class TestSearch(Dispatcher):
     pass
     
 class ProviderTest(Dispatcher):
-    def __init__(self, config: ProviderConfig) -> None:
-        self._config = config
+    def __init__(self, parser: WebsiteParser) -> None:
+        self._parser = parser
         self.series = TestSeries(self.__dispatcher__)
         self.search = TestSearch(self.__dispatcher__)
     
     def __dispatcher__(self, key, *args, **kwargs) -> TestsOutcome:
         outcome = TestsOutcome()
-        for test in self._config._get_tests(key):
+        for test in self._parser._get_tests(key):
             def test_runner(*args, **kwargs):
-                return self._config._exec_mapping(key, *args, **kwargs)
+                return self._parser._exec_mapping(key, *args, **kwargs)
             output = test.run(test_runner)
             outcome.append(output)
         return outcome
     
     def all(self) -> Dict[str, bool]:
         state = {}
-        for key in self._config._get_keys():            
+        for key in self._parser._get_keys():            
             outcome = self.__dispatcher__(key)
             keys = key.split(".")
             d = state

@@ -2,7 +2,7 @@
 
 Jidouteki ("自動的", "automatic") is a website-independed manga sources and data extractor.
 
-It uses python configs to describe website structures and provides many convenience methods to get parsers writen quickly and accurately.
+It uses python parsers to describe website structures and provides many convenience methods to get parsers writen quickly and accurately.
 
 ## Example
 
@@ -11,7 +11,7 @@ Given a `google-drive.py` file
 ```python
 import jidouteki
 
-class GDrive(ProviderConfig):
+class GDrive(WebsiteParser):
     def meta(self):
         return jidouteki.Metadata(
             base = 'https://drive.google.com/',
@@ -54,7 +54,7 @@ print(images)
 
 Will print all the urls of the images contained the google-drive `folderId` folder.
 
-The config files are publicily hosted over on [ridamoe/configs](https://github.com/ridamoe/configs).
+The parsers are publicily hosted over on [ridamoe/parsers](https://github.com/ridamoe/parsers).
 Contributions are welcome!
 
 ## TODO

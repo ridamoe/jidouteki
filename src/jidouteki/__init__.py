@@ -4,7 +4,7 @@ import importlib
 import inspect
 from typing import List
 from .provider import *
-from .config import *
+from .parser import *
 from .utils import *
 
 class Jidouteki():
@@ -19,23 +19,23 @@ class Jidouteki():
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             
-            provider_config = None
+            website_parser = None
             
             for _, klass in inspect.getmembers(module, inspect.isclass):
-                if issubclass(klass, ProviderConfig) and klass is not ProviderConfig:
-                    if provider_config != None:
-                        raise Exception(f"Multiple provider configs found in '{path.name}'. Only a single provider can be defined per file.")
+                if issubclass(klass, WebsiteParser) and klass is not WebsiteParser:
+                    if website_parser != None:
+                        raise Exception(f"Multiple parsers found in '{path.name}'. Only a single parser should be defined per file.")
                     else:
-                        provider_config = klass
+                        website_parser = klass
             
-            if not provider_config:
-                raise Exception(f"No provider config found in '{path.name}'. Create a class that inherits from 'ProviderConfig'")
+            if not website_parser:
+                raise Exception(f"No parser found in '{path.name}'. Create a class that inherits from 'WebsiteParser'")
                  
-            return Provider(provider_config(context=self))
+            return Provider(website_parser(context=self))
 
     def load_directory(self, dir) -> List[Provider]:
-        configs = []
+        providers = []
         for path in Path(dir).iterdir():
             if path.is_file() and not path.name.startswith("_") and path.suffix == ".py":
-                configs.append(self.load_provider(path))
-        return configs
+                providers.append(self.load_provider(path))
+        return providers
